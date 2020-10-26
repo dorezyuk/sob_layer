@@ -37,16 +37,12 @@ install(FILES sob_layer.xml
 ## Testing ##
 #############
 
-## Add gtest based cpp test target and link libraries
 if(CATKIN_ENABLE_TESTING)
   catkin_add_gtest(${PROJECT_NAME}_test test/sob_layer.cpp)
   if(TARGET ${PROJECT_NAME}_test)
     target_link_libraries(${PROJECT_NAME}_test ${PROJECT_NAME})
   endif()
 endif()
-
-## Add folders to be run by python nosetests
-# catkin_add_nosetests(test)
 
 ###############
 ## Benchmark ##

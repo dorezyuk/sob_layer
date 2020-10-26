@@ -32,7 +32,6 @@
 
 #include <memory>
 #include <mutex>
-#include <unordered_map>
 #include <vector>
 
 namespace sob_layer {

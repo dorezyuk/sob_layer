@@ -51,7 +51,7 @@ The used stride-values are [101, 51, 41, 31, 21, 11, 6, 3, 2].
 ![image](doc/stats.png)
 
 The image above shows the results. 
-The results were obtained on a AMD Ryzen 5 PRO 4650U CPU.
+The results were obtained on a AMD Ryzen 5 PRO 4650U CPU with GCC 7.5.0
 
 The y-axis indicates the cpu_time. The
 x-axis show the occupancy; The occupancy increases from left to right.
@@ -61,3 +61,26 @@ second scenario.
 
 
 ## Config
+
+The SobLayer follows mostly the configuration from costmap_2d::InflationLayer,
+easing the change for users.
+
+```yaml
+# in your <common|local|global>_costmap.yaml
+plugins:
+    # ...
+    -{{name: inflation_layer,  type: "sob_layer::SobLayer"}}
+
+inflation_layer:
+    # in meters. positive will suppress the automatic calculation from the
+    # footprint
+    inflation_radius: -1.
+    # in meters, as in costmap_2d::InflationLayer
+    inscribed_radius:  1.
+    # decay, as in costmap_2d::InflationLayer
+    cost_scaling_factor: 0
+    # same behavior as in every costmap_2d::Layer:
+    # calls to updateCosts and updateBounds will be skipped, if false
+    enabled: true
+
+```
