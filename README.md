@@ -31,4 +31,31 @@ The library requires at least C++11. It has been tested on Ubuntu 18.04 running 
 
 
 ## Benchmarks
+
+This library was benchmarked against the costmap_2d::InflationLayer.
+The benchmarks focus on two extreme scenarios. 
+
+In the first scenario we measure the performance of large, connected obstacles.
+We place a filled rectangle in the middle of the map.
+The rectangle is set to the size NxN. N ranges from 0 to 0.9 times the overall map's
+edge E (assuming the map has the size ExE). An increasing N increases hence the load-factor/occupancy.
+
+In the second scenario we measure the performance of unconnected obstacles.
+On an flattened map, we mark every N-th cell as occupied.
+If N is the stride, then a decreasing stride
+increases the load-factor/occupancy (more cells are marked as occupied).
+The used stride-values are [101, 51, 41, 31, 21, 11, 6, 3, 2].
+
+![image](doc/stats.png)
+
+The image above shows the results. 
+The results were obtained on a AMD Ryzen 5 PRO 4650U CPU.
+
+The y-axis indicates the cpu_time. The
+x-axis show the occupancy; The occupancy increases from left to right.
+Both scenarios were run for two map-sizes: 100x100 and 1000x1000.
+The upper row shows the results for the first scenario, the lower for the
+second scenario.
+
+
 ## Config

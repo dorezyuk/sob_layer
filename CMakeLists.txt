@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(sob_layer CXX)
 
-# on gcc use -fopt-info-loop-optimized
-# on clang use -Rpass=loop-vectorize to check the vectorization
-# add_definitions("-O3 -march=native -fopt-info-loop-optimized")
+# on gcc use -fopt-info-loop-optimized to check the auto-vectorization
+# on clang use -Rpass=loop-vectorize to check the auto-vectorization
+add_definitions("-O3 -march=native")
 set(catkin_PACKAGES costmap_2d dynamic_reconfigure pluginlib)
 
 find_package(catkin REQUIRED ${catkin_PACKAGES})
