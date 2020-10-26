@@ -1,0 +1,5 @@
+<library path="lib/libsob_layer">
+  <class type="sob_layer::SobLayer" base_class_type="costmap_2d::Layer">
+    <description>Plugin-replacement for the default costmap_2d::InflationLayer.</description>
+  </class>
+</library>
