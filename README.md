@@ -69,7 +69,7 @@ easing the change for users.
 # in your <common|local|global>_costmap.yaml
 plugins:
     # ...
-    -{{name: inflation_layer,  type: "sob_layer::SobLayer"}}
+    -{name: inflation_layer,  type: "sob_layer::SobLayer"}
 
 inflation_layer:
     # in meters. positive will suppress the automatic calculation from the
