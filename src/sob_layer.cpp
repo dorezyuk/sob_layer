@@ -1,7 +1,33 @@
-#include <boost/bind.hpp>
-#include <pluginlib/class_list_macros.hpp>
+/*
+ * MIT License
+ *
+ * Copyright (c) 2020 Dima Dorezyuk
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 #include <sob_layer/sob_layer.hpp>
+
+#include <pluginlib/class_list_macros.hpp>
 #include <ros/node_handle.h>
+
+#include <boost/bind.hpp>
 
 #include <algorithm>
 #include <cmath>
@@ -240,7 +266,7 @@ double inline parabolaIntersection(int x_1, int y_1, int x_2,
 
 void
 SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
-                         int max_i, int max_j) {
+                          int max_i, int max_j) {
   const auto grid_m = _master.getCharMap();
   const auto qq_max = max_i - min_i;
   const auto sq_dist = std::pow(dist, 2);
