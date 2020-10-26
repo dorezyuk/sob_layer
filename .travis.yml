@@ -1,0 +1,23 @@
+language: generic
+dist: trusty
+
+notifications:
+  email:
+    recipients:
+      - dmitrij.dorezyuk@hotmail.de
+    on_success: change
+    on_failure: change
+
+matrix:
+  include:
+  - name: "Melodic"
+    env: ROS_DISTRO=melodic
+  
+  - name: "Noetic"
+    env: ROS_DISTRO=noetic
+
+install:
+  - git clone --quiet --depth 1 https://github.com/ros-industrial/industrial_ci.git .ci_config -b master
+
+script:
+  - .ci_config/travis.sh
