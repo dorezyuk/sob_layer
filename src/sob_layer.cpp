@@ -111,8 +111,6 @@ SobLayer::matchSize() {
   need_reinflation_ |= resolution_ != new_resolution;
   resolution_ = new_resolution;
 
-  computeCache();
-
   // allocate enough space for one row
   // z and v follow the paper
   // (http://cs.brown.edu/people/pfelzens/papers/dt-final.pdf)
@@ -134,8 +132,6 @@ SobLayer::onFootprintChanged() {
 
   need_reinflation_ |= inscribed_radius_ != new_inscribed_radius;
   inscribed_radius_ = new_inscribed_radius;
-
-  computeCache();
 }
 
 void
@@ -148,8 +144,6 @@ SobLayer::reconfigureCallback(config_type& _config, uint32_t _level) {
 
   inflation_radius_ = _config.inflation_radius;
   decay_ = -_config.cost_scaling_factor;
-
-  computeCache();
 
   enabled_ = _config.enabled;
   // let the user know
@@ -173,6 +167,9 @@ SobLayer::updateBounds(double robot_x, double robot_y, double robot_yaw,
   // as in the original implementation
   if (need_reinflation_) {
     SL_INFO("reinflating");
+
+    // update the cache
+    computeCache();
 
     // we need to repaint everything!
     const auto master = layered_costmap_->getCostmap();
