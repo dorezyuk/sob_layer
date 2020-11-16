@@ -302,7 +302,7 @@ TEST_P(SobLayerRegressionFixture, simple) {
   const auto obstacle_indices = std::get<0>(GetParam());
   const auto inflation_radius = std::get<1>(GetParam());
 
-  // 0.3 seems to be wierd at the original inflation layer
+  // 0.3 seems to be weird at the original inflation layer
   if (std::abs(inflation_radius - 0.3) < 1e-3)
     return;
 
@@ -328,6 +328,9 @@ TEST_P(SobLayerRegressionFixture, simple) {
   const auto size_x = master.getCostmap()->getSizeInCellsX();
   const auto size_y = master.getCostmap()->getSizeInCellsY();
   inflation.updateCosts(costmap1, 0, 0, size_x, size_y);
+
+  double dummy;
+  updateBounds(0, 0, 0, &dummy, &dummy, &dummy, &dummy);
   updateCosts(costmap2, 0, 0, size_x, size_y);
 
   // check the result
