@@ -84,3 +84,10 @@ inflation_layer:
     enabled: true
 
 ```
+
+## Remarks
+
+Currently this layer does **not** support unknown costs (`costmap_2d::NO_INFORMATION`).
+It will treat those costs as lethal.
+Consequently, the `inflate_unknown` parameter from the original costmap_2d::InflationLayer
+is not supported.
