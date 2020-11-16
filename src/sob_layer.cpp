@@ -154,6 +154,10 @@ SobLayer::reconfigureCallback(config_type& _config, uint32_t _level) {
   enabled_ = _config.enabled;
   // let the user know
   SL_INFO("enabled: " << std::boolalpha << _config.enabled);
+
+  // warn the user for unsupported parameters
+  ROS_WARN_STREAM_COND(_config.inflate_unknown,
+                       sob_layer__ << "inflate_unknown unsupported");
 }
 
 void
