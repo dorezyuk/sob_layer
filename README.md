@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.com/dorezyuk/sob_layer.svg?branch=master)](https://travis-ci.com/dorezyuk/sob_layer)
 
 The sob_layer provides a costmap_2d::Layer plugin for move_base (and all 
-compatible frameworks). Its intention is to offer an alternative to the
+compatible frameworks). Its intention is to offer a faster alternative to the
 commonly used [costmap_2d::InflationLayer](http://wiki.ros.org/costmap_2d/hydro/inflation).
 
 ## Build
