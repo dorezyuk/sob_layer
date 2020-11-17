@@ -23,9 +23,19 @@
  */
 
 #include <sob_layer/sob_layer.hpp>
+
 #include <costmap_2d/inflation_layer.h>
 #include <costmap_2d/layered_costmap.h>
+#include <geometry_msgs/Point.h>
+
 #include <gtest/gtest.h>
+
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <limits>
+#include <tuple>
+#include <vector>
 
 using namespace sob_layer;
 using costmap_2d::Costmap2D;
@@ -36,7 +46,6 @@ using testing::Test;
 
 Point
 make_point(double x, double y) {
-  // who would have thought people need constructors? not ros apparently...
   Point out;
   out.x = x;
   out.y = y;
@@ -70,8 +79,8 @@ struct SobLayerFixture : public LayerFixture<SobLayer>, public Test {
   SobLayerFixture() : master("map", false, false) {
     // setup a footprint with 1 meter radius - needed for the
     // inflation-layer
-    std::vector<Point> fp{make_point(-0.5, -1), make_point(0.5, -1),
-                          make_point(0.5, 1), make_point(-0.5, 1)};
+    const std::vector<Point> fp{make_point(-0.5, -1), make_point(0.5, -1),
+                                make_point(0.5, 1), make_point(-0.5, 1)};
 
     // resize the master
     master.resizeMap(10, 20, 0.1, 0, 0);
@@ -290,14 +299,14 @@ const indices index_parameters[] = {
      41,  43,  47,  53,  59,  61,  67,  71,  73,  79,  83,  89,
      97,  101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151,
      157, 163, 167, 173, 179, 181, 191, 193, 197, 199},  // prime numbers
-    {0, 21, 42, 63, 84, 105, 126, 147, 168, 189}         // diagnal
+    {0, 21, 42, 63, 84, 105, 126, 147, 168, 189}         // diagonal
 };
 
 INSTANTIATE_TEST_CASE_P(/**/, SobLayerRegressionFixture,
                         Combine(ValuesIn(index_parameters),
                                 Range(0.1, 1., 0.1)));
 
-TEST_P(SobLayerRegressionFixture, simple) {
+TEST_P(SobLayerRegressionFixture, comparison) {
   // get the parameter
   const auto obstacle_indices = std::get<0>(GetParam());
   const auto inflation_radius = std::get<1>(GetParam());

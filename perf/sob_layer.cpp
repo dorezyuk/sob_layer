@@ -23,9 +23,14 @@
  */
 
 #include <sob_layer/sob_layer.hpp>
-#include <benchmark/benchmark.h>
+
 #include <costmap_2d/inflation_layer.h>
 #include <costmap_2d/layered_costmap.h>
+
+#include <benchmark/benchmark.h>
+
+#include <cmath>
+#include <vector>
 
 using namespace sob_layer;
 
@@ -58,7 +63,6 @@ struct BMInflationLayer : public costmap_2d::InflationLayer {
 using geometry_msgs::Point;
 Point
 make_point(double x, double y) {
-  // who would have thought people need constructors? not ros apparently...
   Point out;
   out.x = x;
   out.y = y;
@@ -74,8 +78,8 @@ make_master(benchmark::State& _state) noexcept {
   lm.resizeMap(size, size, res, 0, 0);
 
   // setup a footprint with 1 meter radius - needed for the inflation-layer
-  std::vector<Point> fp{make_point(-0.5, -1), make_point(0.5, -1),
-                        make_point(0.5, 1), make_point(-0.5, 1)};
+  const std::vector<Point> fp{make_point(-0.5, -1), make_point(0.5, -1),
+                              make_point(0.5, 1), make_point(-0.5, 1)};
 
   lm.setFootprint(fp);
   return lm;
@@ -228,6 +232,8 @@ main(int argc, char** argv) {
   ::benchmark::Initialize(&argc, argv);
   if (::benchmark::ReportUnrecognizedArguments(argc, argv))
     return 1;
+
+  // switch off ros-logging
   if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME,
                                      ros::console::levels::Error)) {
     ros::console::notifyLoggerLevelsChanged();
