@@ -16,6 +16,13 @@ git clone https://github.com/dorezyuk/sob_layer.git && cd sob_layer
 catkin build --this --no-deps --cmake-args -DCMAKE_BUILD_TYPE=Release
 ```
 
+The code is optimized to allow compilers to auto-vectorize it.
+You will get some additional performance boost by compiling it with O3 optimization,
+which performs the auto-vectorization:
+```
+catkin build --this --no-deps --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-O3 -march=native"
+```
+
 By default it will also try to build the benchmark target.
 In order to run the benchmarks you will need to install the [benchmark](https://github.com/google/benchmark) library.
 If you don't want to build the benchmark target, add
@@ -51,7 +58,8 @@ The used stride-values are [101, 51, 41, 31, 21, 11, 6, 3, 2].
 ![image](doc/stats.png)
 
 The image above shows the results. 
-The results were obtained on a AMD Ryzen 5 PRO 4650U CPU with GCC 7.5.0
+The results were obtained on a AMD Ryzen 5 PRO 4650U CPU with GCC 7.5.0.
+The library was compiled with "-O3 -march=native" flags.
 
 The y-axis indicates the cpu_time. The
 x-axis show the occupancy; The occupancy increases from left to right.
