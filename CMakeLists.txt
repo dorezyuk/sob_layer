@@ -3,7 +3,7 @@ project(sob_layer CXX)
 
 # on gcc use -fopt-info-loop-optimized to check the auto-vectorization
 # on clang use -Rpass=loop-vectorize to check the auto-vectorization
-add_definitions("-O3 -march=native")
+# use add_definitions("-O3 -march=native") to enable the auto-vectorization.
 set(catkin_PACKAGES costmap_2d dynamic_reconfigure pluginlib)
 
 find_package(catkin REQUIRED ${catkin_PACKAGES})
