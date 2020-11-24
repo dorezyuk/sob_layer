@@ -2,8 +2,8 @@
 Changelog for package sob_layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.0 (2020-11-24)
+------------------
 * prepare for debian-packaging
 * minor fixes
 * adjust documentation
