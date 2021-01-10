@@ -48,8 +48,9 @@ endif()
 ## Benchmark ##
 ###############
 
-set(sob_layer_BENCHMARK "Enable benchmarking" ON)
-if(sob_layer_BENCHMARK)
+# add --cmake-args -Dsob_layer_BENCHMARK=ON when compiling to activate this option.
+set(sob_layer_BENCHMARK OFF CACHE BOOL "build the benchmark target")
+if(${sob_layer_BENCHMARK})
   if(benchmark_FOUND)
     add_executable(${PROJECT_NAME}_perf perf/sob_layer.cpp)
     target_link_libraries(${PROJECT_NAME}_perf benchmark::benchmark ${PROJECT_NAME})
