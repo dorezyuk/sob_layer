@@ -31,6 +31,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iterator>
 #include <limits>
 #include <mutex>
 #include <stdexcept>
@@ -75,7 +76,7 @@ SobLayer::onInitialize() {
   // reinflate always after the init
   need_reinflation_ = true;
 
-  // match the parrent size
+  // match the parent size
   matchSize();
 
   ros::NodeHandle nh("~/" + name_);
@@ -230,7 +231,7 @@ SobLayer::verticalSwipe(const Costmap2D& _master, int dist, int min_i,
     auto gg = grid_m + _master.getIndex(min_i, jj_uu);
     const auto dd_end = map_x_.begin() + _master.getIndex(max_i, jj_uu);
 
-    // branchless formulation saying its either 0 or the previos incremented
+    // branchless formulation saying it's either 0 or the previos incremented
     // we know also that the domains never overlap, so lets convice the compiler
 #pragma GCC ivdep
     for (; dd != dd_end; ++dd, ++ss, ++gg)
