@@ -279,9 +279,9 @@ SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
 
   // follows http://cs.brown.edu/people/pfelzens/papers/dt-final.pdf
   for (auto jj = min_j; jj != max_j; ++jj) {
-    // const-elements
-    // calculate the start and end indices for the current row (rr)
+    // begin of the interesting memory chunk.
     const auto min_rr = _master.getIndex(0, jj);
+    const auto map_x_begin = map_x_.begin() + (min_rr + min_i);
 
     // init vars
     v[0] = min_i;
@@ -292,13 +292,13 @@ SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
     // init the first element of a row, since we start at 1
     // if the first element is out of range, make sure that its 'parabola'
     // starts at inf, so the intersection is below 0
-    map_x_sq_[min_i] = std::pow(map_x_[min_rr + min_i], 2);
+    map_x_sq_[min_i] = std::pow(*map_x_begin, 2);
     if (map_x_sq_[min_i] >= sq_dist)
       map_x_sq_[min_i] = std::numeric_limits<int>::max();
 
     for (int ii = min_i + 1; ii != max_i; ++ii) {
       // ignore everything we don't care about
-      const auto& ii_v = map_x_[min_rr + ii];
+      const auto& ii_v = *(map_x_begin + ii);
       if (ii_v >= dist)
         continue;
 
@@ -342,7 +342,7 @@ SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
 
     for (; k != k_end; ++k) {
       // init the helpers
-      const auto row = static_cast<size_t>(map_x_[min_rr + v[k]]);
+      const auto row = static_cast<size_t>(*(map_x_begin + v[k]));
       const auto& cache_row = cache_.at(row);
       const auto cache_size = (int)cache_row.size();
 
