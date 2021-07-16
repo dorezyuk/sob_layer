@@ -147,6 +147,7 @@ protected:
   std::mutex m_;
 
   std::vector<int> map_x_;
+  std::vector<int> map_x_sq_;
   std::vector<int> v;
   std::vector<double> z;
   std::vector<std::vector<cost_type>> cache_;

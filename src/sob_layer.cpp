@@ -118,6 +118,9 @@ SobLayer::matchSize() {
   v.resize(size_x);
   z.resize(size_x + 1);
 
+  // buffer for holding the squared values.
+  map_x_sq_.resize(size_x);
+
   SL_INFO("resized to " << map_x_.size());
 }
 
@@ -273,6 +276,7 @@ SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
   const auto qq_max = max_i - min_i;
   const auto sq_dist = std::pow(dist, 2);
   int k = 0;
+  double s = 0;
 
   // follows http://cs.brown.edu/people/pfelzens/papers/dt-final.pdf
   for (auto jj = min_j; jj != max_j; ++jj) {
@@ -290,22 +294,22 @@ SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
     // init the first element of a row, since we start at 1
     // if the first element is out of range, make sure that its 'parabola'
     // starts at inf, so the intersection is below 0
-    map_x_[min_rr + min_i] = std::pow(map_x_[min_rr + min_i], 2);
-    if (map_x_[min_rr + min_i] >= sq_dist)
-      map_x_[min_rr + min_i] = std::numeric_limits<int>::max();
+    map_x_sq_[min_i] = std::pow(map_x_[min_rr + min_i], 2);
+    if (map_x_sq_[min_i] >= sq_dist)
+      map_x_sq_[min_i] = std::numeric_limits<int>::max();
 
     for (int ii = min_i + 1; ii != max_i; ++ii) {
       // ignore everything we don't care about
-      auto& ii_v = map_x_[min_rr + ii];
+      const auto& ii_v = map_x_[min_rr + ii];
       if (ii_v >= dist)
         continue;
 
-      ii_v = std::pow(ii_v, 2);
+      map_x_sq_[ii] = std::pow(ii_v, 2);
 
-      auto s = parabolaIntersection(ii, ii_v, v[k], map_x_[min_rr + v[k]]);
+      s = parabolaIntersection(ii, map_x_sq_[ii], v[k], map_x_sq_[v[k]]);
       while (s <= z[k]) {
         --k;
-        s = parabolaIntersection(ii, ii_v, v[k], map_x_[min_rr + v[k]]);
+        s = parabolaIntersection(ii, map_x_sq_[ii], v[k], map_x_sq_[v[k]]);
       }
       ++k;
       v[k] = ii;
@@ -340,7 +344,7 @@ SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
 
     for (; k != k_end; ++k) {
       // init the helpers
-      const auto row = static_cast<size_t>(std::sqrt(map_x_[min_rr + v[k]]));
+      const auto row = static_cast<size_t>(map_x_[min_rr + v[k]]);
       const auto& cache_row = cache_.at(row);
       const auto cache_size = (int)cache_row.size();
 
@@ -363,10 +367,10 @@ SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
         *dd = std::max(*dd, *ss);
 
       // if we are on a horizontal line, copy the last cost
-      const auto sq_row = map_x_[min_rr + v[k]];
+      const auto sq_row = map_x_sq_[v[k]];
       --ss;
       for (; k != k_end - 1; ++k, ++dd) {
-        if (z[k + 2] - z[k + 1] > 1 || map_x_[min_rr + v[k + 1]] != sq_row)
+        if (z[k + 2] - z[k + 1] > 1 || map_x_sq_[v[k + 1]] != sq_row)
           break;
         *dd = std::max(*dd, *ss);
       }
