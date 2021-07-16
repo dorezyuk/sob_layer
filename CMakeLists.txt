@@ -17,7 +17,7 @@ catkin_package(
 
 add_library(${PROJECT_NAME} src/sob_layer.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
-target_include_directories(${PROJECT_NAME} PUBLIC ${catkin_INCLUDE_DIRS} src)
+target_include_directories(${PROJECT_NAME} PUBLIC src ${catkin_INCLUDE_DIRS})
 
 install(TARGETS ${PROJECT_NAME}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
@@ -49,7 +49,7 @@ endif()
 ###############
 
 # add --cmake-args -Dsob_layer_BENCHMARK=ON when compiling to activate this option.
-set(sob_layer_BENCHMARK OFF CACHE BOOL "build the benchmark target")
+set(sob_layer_BENCHMARK OFF)
 if(${sob_layer_BENCHMARK})
   if(benchmark_FOUND)
     add_executable(${PROJECT_NAME}_perf perf/sob_layer.cpp)
