@@ -273,7 +273,6 @@ void
 SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
                           int max_i, int max_j) {
   const auto grid_m = _master.getCharMap();
-  const auto qq_max = max_i - min_i;
   const auto sq_dist = std::pow(dist, 2);
   int k = 0;
   double s = 0;
@@ -282,7 +281,6 @@ SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
   for (auto jj = min_j; jj != max_j; ++jj) {
     // const-elements
     // calculate the start and end indices for the current row (rr)
-    const auto max_rr = _master.getIndex(max_i, jj);
     const auto min_rr = _master.getIndex(0, jj);
 
     // init vars
@@ -467,4 +465,4 @@ SobLayer::computeCache() noexcept {
 
 }  // namespace sob_layer
 
-PLUGINLIB_EXPORT_CLASS(sob_layer::SobLayer, costmap_2d::Layer);
+PLUGINLIB_EXPORT_CLASS(sob_layer::SobLayer, costmap_2d::Layer)
