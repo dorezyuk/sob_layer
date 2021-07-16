@@ -313,21 +313,21 @@ SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
       z[k + 1] = std::numeric_limits<double>::max();
     }
 
-    if (k == 0 && map_x_[min_rr + min_i] >= sq_dist)
+    if (k == 0 && map_x_sq_[min_i] >= sq_dist)
       continue;
 
     auto k_end = k + 1;
     k = 0;
 
     // skip all intervals ending in the negative
-    for (; k != k_end; ++k)
-      if (z[k + 1] >= min_i)
-        break;
+    while (z[k] < min_i)
+      ++k;
+    --k;
 
     // skip all intervals starting to high
-    for (; k_end > k; --k_end)
-      if (z[k_end - 1] < max_i)
-        break;
+    while (z[k_end] >= max_i)
+      --k_end;
+    ++k_end;
 
     // clamp the start and end to the range
     z[k] = std::max<double>(z[k], min_i);
