@@ -3,7 +3,9 @@ project(sob_layer CXX)
 
 # on gcc use -fopt-info-loop-optimized to check the auto-vectorization
 # on clang use -Rpass=loop-vectorize to check the auto-vectorization
-# use add_definitions("-O3 -march=native") to enable the auto-vectorization.
+# uncomment the line below to enable the auto-vectorization.
+# add_definitions("-O3 -march=native")
+add_compile_options(-Wpedantic -Wall -Wextra -Wno-unused-parameter)
 set(catkin_PACKAGES costmap_2d dynamic_reconfigure pluginlib)
 
 find_package(catkin REQUIRED ${catkin_PACKAGES})
@@ -17,7 +19,7 @@ catkin_package(
 
 add_library(${PROJECT_NAME} src/sob_layer.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
-target_include_directories(${PROJECT_NAME} PUBLIC ${catkin_INCLUDE_DIRS} src)
+target_include_directories(${PROJECT_NAME} PUBLIC src ${catkin_INCLUDE_DIRS})
 
 install(TARGETS ${PROJECT_NAME}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
@@ -49,7 +51,7 @@ endif()
 ###############
 
 # add --cmake-args -Dsob_layer_BENCHMARK=ON when compiling to activate this option.
-set(sob_layer_BENCHMARK OFF CACHE BOOL "build the benchmark target")
+set(sob_layer_BENCHMARK OFF)
 if(${sob_layer_BENCHMARK})
   if(benchmark_FOUND)
     add_executable(${PROJECT_NAME}_perf perf/sob_layer.cpp)

@@ -90,6 +90,8 @@ void
 squared_obstacle(benchmark::State& _state) {
   auto master = make_master(_state);
   _Layer layer(master);
+  double dummy;
+  layer.updateBounds(0, 0, 0, &dummy, &dummy, &dummy, &dummy);
 
   // range contains (size, resolution in mm, percentage of blocked area)
   const auto size = static_cast<size_t>(_state.range(0));
@@ -165,6 +167,8 @@ void
 pixels(benchmark::State& _state) {
   auto master = make_master(_state);
   _Layer layer(master);
+  double dummy;
+  layer.updateBounds(0, 0, 0, &dummy, &dummy, &dummy, &dummy);
 
   // range contains (size, resolution in mm, every nth pixel is blocked)
   const auto size = static_cast<size_t>(_state.range(0));
