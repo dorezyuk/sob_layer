@@ -14,38 +14,33 @@ with open("doc/data.csv", "r") as cf:
 # create subplots
 fig, axs = plt.subplots(2, 2)
 
-# first plot
+# convert the time form nanoseconds to milliseconds.
+real_time = np.array(real_time)
+real_time /= 1e6
+
 axs[0, 0].plot(real_time[:10], '--o', label='sob_layer')
 axs[0, 0].plot(real_time[20:30], '--x', label='infaltion_layer')
 axs[0, 0].set_title('100x100 square')
 
-axs[0, 1].plot(real_time[10:20], '--o', label='sob_layer')
-axs[0, 1].plot(real_time[30:40], '--x', label='infaltion_layer')
-axs[0, 1].set_title('1000x1000 square')
+axs[0, 1].plot(real_time[40:49], '--o', label='sob_layer')
+axs[0, 1].plot(real_time[58:67], '--x', label='infaltion_layer')
+axs[0, 1].set_title('100x100 sparse')
 
-axs[1, 0].plot(real_time[40:49], '--o', label='sob_layer')
-axs[1, 0].plot(real_time[58:67], '--x', label='infaltion_layer')
-axs[1, 0].set_title('100x100 sparse')
+axs[1, 0].plot(real_time[10:20], '--o', label='sob_layer')
+axs[1, 0].plot(real_time[30:40], '--x', label='infaltion_layer')
+axs[1, 0].set_title('1000x1000 square')
 
 axs[1, 1].plot(real_time[49:58], '--o',label='sob_layer')
 axs[1, 1].plot(real_time[67:76], '--x',label='infaltion_layer')
 axs[1, 1].set_title('1000x1000 sparse')
 
 for ax in axs.flat:
-    ax.set(ylabel='cpu_time', xlabel='occupancy')
+    ax.set(ylabel='cpu_time [ms]', xlabel='occupancy')
+    ax.set_ylim(ymin=0)
+    ax.set_xticklabels([])
     ax.legend()
 
-for ax in axs.flat:
-    # Adjust the labels
-    ax.label_outer()
-
-    # Normalize to zero
-    ax.set_ylim(ymin=0)
-
-    # Turn off tick labels
-    ax.set_yticklabels([])
-    ax.set_xticklabels([])
-
+fig.tight_layout()
 fig.set_size_inches(10, 10)
 fig.savefig('doc/stats.png', dpi=100)
 
@@ -63,4 +58,3 @@ plt.plot(rel4, label='relative 1000x1000 sparse')
 
 plt.legend()
 fig.savefig('doc/relative.png', dpi=100)
-

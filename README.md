@@ -67,8 +67,8 @@ The library was compiled with GCC 7.5.0 and "-O3 -march=native" flags.
 The y-axis indicates the cpu-time. The
 x-axis shows the "load-factor" (increasing from left to right).
 Both scenarios were run for two map-sizes: 100x100 and 1000x1000.
-The upper row shows the results for the first scenario, the lower for the
-second.
+The upper row shows the results for the smaller size, the lower for the
+larger.
 
 
 ## Config
