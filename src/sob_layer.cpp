@@ -289,10 +289,16 @@ SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
     z[1] = std::numeric_limits<double>::max();
     k = 0;
 
-    // init the first element of a row, since we start at 1
+    {
+      const auto end = map_x_begin + max_i - min_i;
+#pragma GCC ivdep
+      for (auto ss = map_x_begin, dd = map_x_sq_.begin() + min_i; ss != end;
+           ++ss, ++dd)
+        *dd = std::pow(*ss, 2);
+    }
+
     // if the first element is out of range, make sure that its 'parabola'
     // starts at inf, so the intersection is below 0
-    map_x_sq_[min_i] = std::pow(*map_x_begin, 2);
     if (map_x_sq_[min_i] >= sq_dist)
       map_x_sq_[min_i] = std::numeric_limits<int>::max();
 
@@ -301,8 +307,6 @@ SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
       const auto& ii_v = *(map_x_begin + ii);
       if (ii_v >= dist)
         continue;
-
-      map_x_sq_[ii] = std::pow(ii_v, 2);
 
       s = parabolaIntersection(ii, map_x_sq_[ii], v[k], map_x_sq_[v[k]]);
       while (s <= z[k]) {
