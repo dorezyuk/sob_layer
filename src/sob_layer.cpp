@@ -146,7 +146,7 @@ SobLayer::reconfigureCallback(config_type& _config, uint32_t _level) {
   // if the inflation radius has been changed, we need to redo everything
   need_reinflation_ |= inflation_radius_ != _config.inflation_radius;
   need_reinflation_ |= decay_ != -_config.cost_scaling_factor;
-  need_reinflation_ |= inflate_unknown_ != -_config.inflate_unknown;
+  need_reinflation_ |= inflate_unknown_ != _config.inflate_unknown;
 
   inflation_radius_ = _config.inflation_radius;
   decay_ = -_config.cost_scaling_factor;
