@@ -82,6 +82,7 @@ SobLayer::onInitialize() {
   ros::NodeHandle nh("~/" + name_);
 
   // load the config
+  inflate_unknown_ = nh.param("inflate_unknown", true);
   inscribed_radius_ = nh.param("inscribed_radius", -1);
   use_auto_inscribed_radius_ = inscribed_radius_ <= 0;
 
@@ -145,17 +146,15 @@ SobLayer::reconfigureCallback(config_type& _config, uint32_t _level) {
   // if the inflation radius has been changed, we need to redo everything
   need_reinflation_ |= inflation_radius_ != _config.inflation_radius;
   need_reinflation_ |= decay_ != -_config.cost_scaling_factor;
+  need_reinflation_ |= inflate_unknown_ != -_config.inflate_unknown;
 
   inflation_radius_ = _config.inflation_radius;
   decay_ = -_config.cost_scaling_factor;
+  inflate_unknown_ = _config.inflate_unknown;
 
   enabled_ = _config.enabled;
   // let the user know
   SL_INFO("enabled: " << std::boolalpha << _config.enabled);
-
-  // warn the user for unsupported parameters
-  ROS_WARN_STREAM_COND(_config.inflate_unknown,
-                       sob_layer__ << "inflate_unknown unsupported");
 }
 
 void
@@ -277,6 +276,16 @@ SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
   int k = 0;
   double s = 0;
 
+  // the cost udpate function.
+  auto update_cost = [&](const cost_type& _old,
+                         const cost_type& _new) -> const cost_type& {
+    if (_old != costmap_2d::NO_INFORMATION)
+      return std::max(_old, _new);
+    if (inflate_unknown_ || _new >= costmap_2d::INSCRIBED_INFLATED_OBSTACLE)
+      return _new;
+    return _old;
+  };
+
   // follows http://cs.brown.edu/people/pfelzens/papers/dt-final.pdf
   for (auto jj = min_j; jj != max_j; ++jj) {
     // begin of the interesting memory chunk.
@@ -366,7 +375,7 @@ SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
       // copy the data - again no overlap possible
 #pragma GCC ivdep
       for (; ss != ss_end; ++ss, ++dd)
-        *dd = std::max(*dd, *ss);
+        *dd = update_cost(*dd, *ss);
 
       // if we are on a horizontal line, copy the last cost
       const auto sq_row = map_x_sq_[v[k]];
@@ -374,7 +383,7 @@ SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
       for (; k != k_end - 1; ++k, ++dd) {
         if (z[k + 2] - z[k + 1] > 1 || map_x_sq_[v[k + 1]] != sq_row)
           break;
-        *dd = std::max(*dd, *ss);
+        *dd = update_cost(*dd, *ss);
       }
     }
   }

@@ -158,6 +158,7 @@ protected:
   double decay_ = 0;
   bool need_reinflation_ = true;
   bool use_auto_inscribed_radius_ = true;
+  bool inflate_unknown_ = true;
 
   config_server_ptr config_server_;
 };
