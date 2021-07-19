@@ -273,7 +273,7 @@ SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
                           int max_i, int max_j) {
   const auto grid_m = _master.getCharMap();
   const auto sq_dist = std::pow(dist, 2);
-  int k = 0;
+  int k, k_end, k_prev_end;
   double s = 0;
 
   // the cost udpate function.
@@ -331,7 +331,7 @@ SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
     if (k == 0 && map_x_sq_[min_i] >= sq_dist)
       continue;
 
-    auto k_end = k + 1;
+    k_end = k + 1;
     k = 0;
 
     // skip all intervals ending in the negative
@@ -348,10 +348,13 @@ SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
     z[k] = std::max<double>(z[k], min_i);
     z[k_end] = std::min<double>(z[k_end], max_i);
 
-    // apply ceil to everything relevant [k, k_end]
-    const auto zz_end = z.begin() + k_end + 1;
-    for (auto zz = z.begin() + k; zz != zz_end; ++zz)
-      *zz = std::ceil(*zz);
+    {
+      // apply ceil to everything relevant [k, k_end]
+      const auto zz_end = z.begin() + k_end + 1;
+#pragma GCC ivdep
+      for (auto zz = z.begin() + k; zz != zz_end; ++zz)
+        *zz = std::ceil(*zz);
+    }
 
     for (; k != k_end; ++k) {
       // init the helpers
@@ -378,9 +381,10 @@ SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
         *dd = update_cost(*dd, *ss);
 
       // if we are on a horizontal line, copy the last cost
-      const auto sq_row = map_x_sq_[v[k]];
+      const auto& sq_row = map_x_sq_[v[k]];
+      k_prev_end = k_end - 1;
       --ss;
-      for (; k != k_end - 1; ++k, ++dd) {
+      for (; k != k_prev_end; ++k, ++dd) {
         if (z[k + 2] - z[k + 1] > 1 || map_x_sq_[v[k + 1]] != sq_row)
           break;
         *dd = update_cost(*dd, *ss);
