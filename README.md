@@ -93,15 +93,11 @@ inflation_layer:
     # same behavior as in every costmap_2d::Layer:
     # calls to updateCosts and updateBounds will be skipped, if false
     enabled: true
+    # If set to true, the costs with the value costmap_2d::NO_INFORMATION will
+    # be overwritten by any cost larger than costmap_2d::FREE_SPACE.
+    inflate_unknown: true
 
 ```
-
-## Remarks
-
-Currently this layer does **not** support unknown costs (`costmap_2d::NO_INFORMATION`).
-It will treat those costs as lethal.
-Consequently, the `inflate_unknown` parameter from the original costmap_2d::InflationLayer
-is not supported.
 
 ## References
 
