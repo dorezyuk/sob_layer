@@ -277,11 +277,12 @@ SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
   double s = 0;
 
   // the cost udpate function.
-  auto update_cost = [&](const cost_type& _old,
+  auto update_cost = [inflate_unknown = inflate_unknown_](
+                         const cost_type& _old,
                          const cost_type& _new) -> const cost_type& {
     if (_old != costmap_2d::NO_INFORMATION)
       return std::max(_old, _new);
-    if (inflate_unknown_ || _new >= costmap_2d::INSCRIBED_INFLATED_OBSTACLE)
+    if (inflate_unknown || _new >= costmap_2d::INSCRIBED_INFLATED_OBSTACLE)
       return _new;
     return _old;
   };
