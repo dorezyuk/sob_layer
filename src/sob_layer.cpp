@@ -49,7 +49,7 @@ constexpr char sob_layer__[] = "[sob_layer] ";
 
 inline bool
 is_free(const unsigned char& _c) noexcept {
-  return _c < costmap_2d::LETHAL_OBSTACLE;
+  return _c != costmap_2d::LETHAL_OBSTACLE;
 }
 
 template <typename T>
@@ -82,6 +82,8 @@ SobLayer::onInitialize() {
   ros::NodeHandle nh("~/" + name_);
 
   // load the config
+  inflate_unknown_ =
+      nh.param("inflate_unknown", layered_costmap_->isTrackingUnknown());
   inscribed_radius_ = nh.param("inscribed_radius", -1);
   use_auto_inscribed_radius_ = inscribed_radius_ <= 0;
 
@@ -145,17 +147,14 @@ SobLayer::reconfigureCallback(config_type& _config, uint32_t _level) {
   // if the inflation radius has been changed, we need to redo everything
   need_reinflation_ |= inflation_radius_ != _config.inflation_radius;
   need_reinflation_ |= decay_ != -_config.cost_scaling_factor;
+  need_reinflation_ |= inflate_unknown_ != _config.inflate_unknown;
 
   inflation_radius_ = _config.inflation_radius;
   decay_ = -_config.cost_scaling_factor;
-
+  inflate_unknown_ = _config.inflate_unknown;
   enabled_ = _config.enabled;
   // let the user know
   SL_INFO("enabled: " << std::boolalpha << _config.enabled);
-
-  // warn the user for unsupported parameters
-  ROS_WARN_STREAM_COND(_config.inflate_unknown,
-                       sob_layer__ << "inflate_unknown unsupported");
 }
 
 void
@@ -274,8 +273,20 @@ SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
                           int max_i, int max_j) {
   const auto grid_m = _master.getCharMap();
   const auto sq_dist = std::pow(dist, 2);
-  int k = 0;
+  int k, k_end, k_prev_end;
   double s = 0;
+
+  const auto unknown_threshold =
+      inflate_unknown_ ? costmap_2d::FREE_SPACE
+                       : costmap_2d::INSCRIBED_INFLATED_OBSTACLE - 1;
+  auto update_cost = [&](const cost_type& _old,
+                         const cost_type& _new) -> const cost_type& {
+    if (_old != costmap_2d::NO_INFORMATION)
+      return std::max(_old, _new);
+    if (_new > unknown_threshold)
+      return _new;
+    return _old;
+  };
 
   // follows http://cs.brown.edu/people/pfelzens/papers/dt-final.pdf
   for (auto jj = min_j; jj != max_j; ++jj) {
@@ -322,7 +333,7 @@ SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
     if (k == 0 && map_x_sq_[min_i] >= sq_dist)
       continue;
 
-    auto k_end = k + 1;
+    k_end = k + 1;
     k = 0;
 
     // skip all intervals ending in the negative
@@ -339,10 +350,13 @@ SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
     z[k] = std::max<double>(z[k], min_i);
     z[k_end] = std::min<double>(z[k_end], max_i);
 
-    // apply ceil to everything relevant [k, k_end]
-    const auto zz_end = z.begin() + k_end + 1;
-    for (auto zz = z.begin() + k; zz != zz_end; ++zz)
-      *zz = std::ceil(*zz);
+    {
+      // apply ceil to everything relevant [k, k_end]
+      const auto zz_end = z.begin() + k_end + 1;
+#pragma GCC ivdep
+      for (auto zz = z.begin() + k; zz != zz_end; ++zz)
+        *zz = std::ceil(*zz);
+    }
 
     for (; k != k_end; ++k) {
       // init the helpers
@@ -366,15 +380,16 @@ SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
       // copy the data - again no overlap possible
 #pragma GCC ivdep
       for (; ss != ss_end; ++ss, ++dd)
-        *dd = std::max(*dd, *ss);
+        *dd = update_cost(*dd, *ss);
 
       // if we are on a horizontal line, copy the last cost
-      const auto sq_row = map_x_sq_[v[k]];
+      const auto& sq_row = map_x_sq_[v[k]];
+      k_prev_end = k_end - 1;
       --ss;
-      for (; k != k_end - 1; ++k, ++dd) {
+      for (; k != k_prev_end; ++k, ++dd) {
         if (z[k + 2] - z[k + 1] > 1 || map_x_sq_[v[k + 1]] != sq_row)
           break;
-        *dd = std::max(*dd, *ss);
+        *dd = update_cost(*dd, *ss);
       }
     }
   }

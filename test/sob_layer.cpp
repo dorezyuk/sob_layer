@@ -143,6 +143,7 @@ TEST_F(SobLayerFixture, reconfigureCallback) {
   config_type config;
   config.inflation_radius = expected_rad;
   config.cost_scaling_factor = -expected_decay;
+  config.inflate_unknown = inflate_unknown_;
 
   reconfigureCallback(config, 0);
 
@@ -160,6 +161,16 @@ TEST_F(SobLayerFixture, reconfigureCallback) {
   // again check the result
   ASSERT_TRUE(need_reinflation_);
   ASSERT_FLOAT_EQ(expected_decay, decay_);
+
+  // inflate_unknown
+  need_reinflation_ = false;
+  config.inflate_unknown = !inflate_unknown_;
+
+  reconfigureCallback(config, 0);
+
+  // again check the result
+  ASSERT_TRUE(need_reinflation_);
+  ASSERT_EQ(config.inflate_unknown, inflate_unknown_);
 
   // final check
   need_reinflation_ = false;

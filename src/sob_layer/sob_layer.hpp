@@ -88,6 +88,14 @@ using costmap_2d::Layer;
  * inscribed_radius from the footprint-parameters. This is what the original
  * implementation does. Use a positive value to set your own radius.
  *
+ * @subsubsection inflate_unknown (Bool)
+ *
+ * Defaults to the value of the parent costmap_2d::LayeredCostmap. The costs
+ * with the value costmap_2d::NO_INFORMATION will be overwritten by any value
+ * larger than costmap_2d::FREE_SPACE, if this flag is set to true. Otherwise,
+ * these costs will be only overwritten, if the new cost is larger than or equal
+ * to costmap_2d::INSCRIBED_INFLATED_OBSTACLE.
+ *
  * @subsection Deprectated Parameters
  *
  * @subsubsection inflate_unknown
@@ -142,7 +150,7 @@ protected:
 
   void
   horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j, int max_i,
-                 int max_j);
+                  int max_j);
 
   std::mutex m_;
 
@@ -158,6 +166,7 @@ protected:
   double decay_ = 0;
   bool need_reinflation_ = true;
   bool use_auto_inscribed_radius_ = true;
+  bool inflate_unknown_ = true;
 
   config_server_ptr config_server_;
 };
