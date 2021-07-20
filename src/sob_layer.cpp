@@ -49,7 +49,7 @@ constexpr char sob_layer__[] = "[sob_layer] ";
 
 inline bool
 is_free(const unsigned char& _c) noexcept {
-  return _c < costmap_2d::LETHAL_OBSTACLE;
+  return _c != costmap_2d::LETHAL_OBSTACLE;
 }
 
 template <typename T>
@@ -82,7 +82,8 @@ SobLayer::onInitialize() {
   ros::NodeHandle nh("~/" + name_);
 
   // load the config
-  inflate_unknown_ = nh.param("inflate_unknown", true);
+  inflate_unknown_ =
+      nh.param("inflate_unknown", layered_costmap_->isTrackingUnknown());
   inscribed_radius_ = nh.param("inscribed_radius", -1);
   use_auto_inscribed_radius_ = inscribed_radius_ <= 0;
 
@@ -151,7 +152,6 @@ SobLayer::reconfigureCallback(config_type& _config, uint32_t _level) {
   inflation_radius_ = _config.inflation_radius;
   decay_ = -_config.cost_scaling_factor;
   inflate_unknown_ = _config.inflate_unknown;
-
   enabled_ = _config.enabled;
   // let the user know
   SL_INFO("enabled: " << std::boolalpha << _config.enabled);
@@ -276,13 +276,14 @@ SobLayer::horizontalSwipe(Costmap2D& _master, int dist, int min_i, int min_j,
   int k, k_end, k_prev_end;
   double s = 0;
 
-  // the cost udpate function.
-  auto update_cost = [inflate_unknown = inflate_unknown_](
-                         const cost_type& _old,
+  const auto unknown_threshold =
+      inflate_unknown_ ? costmap_2d::FREE_SPACE
+                       : costmap_2d::INSCRIBED_INFLATED_OBSTACLE - 1;
+  auto update_cost = [&](const cost_type& _old,
                          const cost_type& _new) -> const cost_type& {
     if (_old != costmap_2d::NO_INFORMATION)
       return std::max(_old, _new);
-    if (inflate_unknown || _new >= costmap_2d::INSCRIBED_INFLATED_OBSTACLE)
+    if (_new > unknown_threshold)
       return _new;
     return _old;
   };

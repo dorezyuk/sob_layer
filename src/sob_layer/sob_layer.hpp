@@ -90,10 +90,11 @@ using costmap_2d::Layer;
  *
  * @subsubsection inflate_unknown (Bool)
  *
- * Defaults to true. The costs with the value costmap_2d::NO_INFORMATION will be
- * overwritten by any value larger than costmap_2d::FREE_SPACE, if this flag is
- * set to true. Otherwise, these costs will be only overwritten, if the new cost
- * is larger than or equal to costmap_2d::INSCRIBED_INFLATED_OBSTACLE.
+ * Defaults to the value of the parent costmap_2d::LayeredCostmap. The costs
+ * with the value costmap_2d::NO_INFORMATION will be overwritten by any value
+ * larger than costmap_2d::FREE_SPACE, if this flag is set to true. Otherwise,
+ * these costs will be only overwritten, if the new cost is larger than or equal
+ * to costmap_2d::INSCRIBED_INFLATED_OBSTACLE.
  *
  * @subsection Deprectated Parameters
  *
