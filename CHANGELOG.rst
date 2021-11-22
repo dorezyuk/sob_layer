@@ -2,8 +2,8 @@
 Changelog for package sob_layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.1 (2021-11-22)
+------------------
 * fix segmentation fault (`#12 <https://github.com/dorezyuk/sob_layer/issues/12>`_)
 * Dima/unknown cost (`#11 <https://github.com/dorezyuk/sob_layer/issues/11>`_)
 * Merge pull request `#10 <https://github.com/dorezyuk/sob_layer/issues/10>`_ from dorezyuk/dima/dev2
